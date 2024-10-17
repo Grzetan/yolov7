@@ -308,3 +308,11 @@ YOLOv7-3d-detection & YOLOv7-lidar & YOLOv7-road (with NTUT)
 * [https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose](https://github.com/TexasInstruments/edgeai-yolov5/tree/yolo-pose)
 
 </details>
+
+
+
+When training on colab:
+1. Zip the data with avi (MJPEG codec) video and upload to drive
+2. Load the nodebook and change path in data.yaml file to absolute with "/content/drive/MyDrive/yourdatasetname"
+3. yolov7/utils/datasets.py line 610 - Change path to point to example_frame.PNG in images/train dir
+4. yolov7/utils/datasets.py line 859 - Change to point to video from zip

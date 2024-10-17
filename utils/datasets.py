@@ -607,7 +607,10 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         for i, (im_file, lb_file) in enumerate(pbar):
             try:
                 # verify images
-                im = Image.open(im_file)
+                directory = os.path.dirname(im_file)
+                # Create a new path with the same directory but a different filename
+                new_path = os.path.join(directory, "frame_example.PNG")
+                im = Image.open(new_path)
                 im.verify()  # PIL verify
                 shape = exif_size(im)  # image size
                 segments = []  # instance segments
@@ -853,7 +856,7 @@ def load_image(self, index):
     img = self.imgs[index]
     if img is None:  # not cached
         start = time.time()
-        video = cv2.VideoCapture("./21:30/data/images/output.avi")
+        video = cv2.VideoCapture("./21:30/data/images/21_30.avi")
         video.set(cv2.CAP_PROP_POS_FRAMES, index)
         ret, img = video.read()
         duration = time.time() - start
