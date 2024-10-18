@@ -850,15 +850,47 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
 import time
 
 
+def load_compressed_frames(video_path):
+    video_capture = cv2.VideoCapture(video_path)
+
+    if not video_capture.isOpened():
+        print("Error: Could not open video.")
+        return None
+
+    compressed_frames = []
+    i = 0
+    while True:
+        ret, frame = video_capture.read()
+        if not ret:
+            break
+        i += 1
+        print(i)
+        # Get the raw JPEG-encoded frame (from MJPEG stream)
+        ret, jpeg_frame = cv2.imencode(".jpg", frame)
+
+        if not ret:
+            print("Error: Could not encode frame as JPEG.")
+            break
+
+        # Store the compressed JPEG frame (byte array) in memory
+        compressed_frames.append(jpeg_frame.tobytes())
+
+    video_capture.release()
+
+    return compressed_frames
+
+
+frames = load_compressed_frames("./21:30/data/images/21_30.avi")
+
+
 # Ancillary functions --------------------------------------------------------------------------------------------------
 def load_image(self, index):
     # loads 1 image from dataset, returns img, original hw, resized hw
     img = self.imgs[index]
     if img is None:  # not cached
         start = time.time()
-        video = cv2.VideoCapture("./21:30/data/images/21_30.avi")
-        video.set(cv2.CAP_PROP_POS_FRAMES, index)
-        ret, img = video.read()
+        np_frame = np.frombuffer(frames[index], dtype=np.uint8)
+        img = cv2.imdecode(np_frame, cv2.IMREAD_COLOR)
         duration = time.time() - start
         if duration > 1.0:
             print("Time to get frame", index, time.time() - start)
